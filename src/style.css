@@ -1,0 +1,45 @@
+body {
+  position: relative;
+  margin: 0;
+  font-family: Helvetica, sans-serif;
+  font-size: 12px;
+  color: #333;
+}
+
+#target {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+}
+
+main {
+  background: white;
+  border: solid #333 0;
+  border-bottom-width: 5px;
+  border-left-width: 5px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+details {
+  margin: 5px;
+}
+
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+h1 {
+  text-align: center;
+  margin: 0;
+  font-size: 4vmin;
+}

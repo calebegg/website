@@ -1,0 +1,21 @@
+{
+  "name": "website",
+  "version": "0.0.1",
+  "dependencies": {
+    "@types/three": "^0.93.22",
+    "parcel": "^1.11.0",
+    "postcss-modules": "^1.4.1",
+    "three": "^0.101.1",
+    "typescript": "^3.3.3"
+  },
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "prettier": {
+    "trailingComma": "all"
+  },
+  "browserslist": [
+    "since 2017-06"
+  ]
+}

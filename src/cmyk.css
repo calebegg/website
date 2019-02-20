@@ -1,0 +1,48 @@
+:root {
+  --dot-color: black;
+  --rotation: 0;
+  --scale: 40%;
+}
+
+@keyframes move {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 60px;
+  }
+}
+
+div.color-dot {
+  background: radial-gradient(var(--dot-color) var(--scale), transparent 0);
+  background-size: 60px 60px;
+  transform: rotate(var(--rotation));
+  width: 200vmax;
+  height: 200vmax;
+  position: absolute;
+  left: -50vmax;
+  top: -50vmax;
+  mix-blend-mode: multiply;
+  animation: 10s move linear infinite;
+}
+
+div.C {
+  --dot-color: #0ff;
+  --rotation: 15deg;
+  --scale: 30%;
+}
+div.M {
+  --dot-color: #f0f;
+  --rotation: 75deg;
+  --scale: 50%;
+}
+div.Y {
+  --dot-color: #ff0;
+  --rotation: 0deg;
+  --scale: 60%;
+}
+div.K {
+  --dot-color: black;
+  --rotation: 45deg;
+  --scale: 20%;
+}

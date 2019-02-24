@@ -2,8 +2,9 @@ import { main as cmyk } from "./cmyk";
 import { main as squiggle } from "./squiggle";
 import { main as swarm } from "./swarm";
 import { main as waves } from "./waves";
+import { main as jpeg } from "./jpeg";
 
-const mains = [cmyk, squiggle, swarm, waves];
+const mains = [cmyk, squiggle, swarm, waves, jpeg];
 
 function subjectivelyChoose<T>(array: T[]): T {
   const context: number[] = JSON.parse(
@@ -22,7 +23,7 @@ function subjectivelyChoose<T>(array: T[]): T {
   context.unshift(index);
   localStorage.setItem(
     "subjective_context",
-    JSON.stringify([index, ...context.slice(0, array.length - 1)]),
+    JSON.stringify([index, ...context.slice(0, array.length - 2)]),
   );
   return array[index];
 }

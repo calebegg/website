@@ -39,7 +39,7 @@ export function main(target: HTMLElement) {
   let frame = 0;
 
   c.fillStyle = "#f0f";
-  c.fillRect(0, 0, WIDTH, WIDTH);
+  c.fillRect(0, 0, WIDTH, HEIGHT);
 
   function render() {
     frame++;

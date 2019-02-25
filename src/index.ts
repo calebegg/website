@@ -4,7 +4,13 @@ import { main as swarm } from "./swarm";
 import { main as waves } from "./waves";
 import { main as jpeg } from "./jpeg";
 
-const mains = [cmyk, squiggle, swarm, waves, jpeg];
+const mains: { [k: string]: typeof cmyk } = {
+  cmyk,
+  squiggle,
+  swarm,
+  waves,
+  jpeg,
+};
 
 function subjectivelyChoose<T>(array: T[]): T {
   const context: number[] = JSON.parse(
@@ -28,8 +34,9 @@ function subjectivelyChoose<T>(array: T[]): T {
   return array[index];
 }
 
-document.getElementById("target")!.innerHTML = "";
-subjectivelyChoose(mains)(document.getElementById("target")!);
+(mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains)))(
+  document.getElementById("target")!,
+);
 
 const details = document.getElementsByTagName("details")[0];
 details.style.width = `${details.clientWidth - 16}px`;

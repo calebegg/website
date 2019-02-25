@@ -15,23 +15,23 @@ body {
   z-index: -1;
 }
 
-main {
-  background: white;
-  border: solid #333 0;
-  border-bottom-width: 5px;
-  border-left-width: 5px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 details {
-  margin: 5px;
+  background: white;
+  border: solid #333 5px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 8px;
 }
 
 details > summary {
   list-style: none;
   cursor: pointer;
+  margin: -8px;
+  padding: 8px;
+}
+details > :last-child {
+  margin-bottom: 0;
 }
 
 details > summary::-webkit-details-marker {
@@ -41,5 +41,5 @@ details > summary::-webkit-details-marker {
 h1 {
   text-align: center;
   margin: 0;
-  font-size: 4vmin;
+  font-size: 3vw;
 }

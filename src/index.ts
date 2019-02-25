@@ -32,4 +32,4 @@ document.getElementById("target")!.innerHTML = "";
 subjectivelyChoose(mains)(document.getElementById("target")!);
 
 const details = document.getElementsByTagName("details")[0];
-details.style.width = `${details.clientWidth}px`;
+details.style.width = `${details.clientWidth - 16}px`;

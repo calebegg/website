@@ -119,7 +119,7 @@ export function main(target: HTMLElement) {
       WIDTH / 2 + Math.floor((Math.random() * WIDTH) / 2 - WIDTH / 4)
     ] = sand();
     data[0][Math.floor(Math.random() * WIDTH)] = sand();
-    setTimeout(render, 0);
+    setTimeout(render, 60);
   }
 
   requestAnimationFrame(render);

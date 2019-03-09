@@ -1,9 +1,17 @@
-export function main() {
-  const canvas = document.getElementsByTagName("canvas")[0];
+export function main(target: HTMLElement) {
+  const canvas = document.createElement("canvas");
+  canvas.width = innerWidth * 2;
+  canvas.height = innerHeight * 2;
+  canvas.style.width = `${innerWidth}px`;
+  target.appendChild(canvas);
   const c = canvas.getContext("2d")!;
+  c.scale(2, 2);
 
-  const DIM = 100;
-  const RES = 500 / DIM;
+  const RES = Math.floor(innerWidth / 150);
+  const WIDTH = Math.floor(innerWidth / RES) + 1;
+  const HEIGHT = Math.floor(innerHeight / RES) + 1;
+  c.translate(((innerWidth % RES) - RES) / 2, (innerHeight % RES) - RES);
+  console.log(innerHeight % RES);
 
   enum State {
     AIR,
@@ -36,46 +44,17 @@ export function main() {
     ["A1/AW", "AA/1W"],
   ];
 
-  for (let r = 0; r < DIM; r++) {
+  for (let r = 0; r < HEIGHT; r++) {
     data.push([]);
-    for (let c = 0; c < DIM; c++) {
+    for (let c = 0; c < WIDTH; c++) {
       data[r][c] = State.AIR;
     }
   }
 
-  const template =
-    `
- XX   XX    X    XXXX XXX  XXXX    XX   XX
-X  X X  X   X    X    X  X X      X  X X  X
-X    X  X   X    X    XXX  X      X    X
-X    XXXX   X    XXX  X  X XXX    X XX X XX
-X  X X  X   X    X    X  X X      X  X X  X
- XX  X  X X XXXX XXXX XXX  XXXX X  XX   XX
-` ||
-    `
- ###    #       #     ##### ####  #####      ###   ###  
-#   #  # #      #     #     #   # #         #   # #   # 
-#     #   #     #     #     #   # #         #     #     
-#     #   #     #     ###   ####  ###       #  ## #  ## 
-#     ##### ### #     #     #   # #     ### #   # #   # 
-#   # #   # ### #     #     #   # #     ### #   # #   # 
- ###  #   # ### ##### ##### ####  ##### ###  ###   ###  
-`;
-
-  for (const [y, row] of Array.from(template.split(/\n/).entries())) {
-    for (const [x, c] of Array.from(Array.from(row).entries())) {
-      data[2 * y + DIM / 2][2 * x + 6] = c !== " " ? State.WALL : State.AIR;
-      data[2 * y + 1 + DIM / 2][2 * x + 6] = c !== " " ? State.WALL : State.AIR;
-      data[2 * y + DIM / 2][2 * x + 7] = c !== " " ? State.WALL : State.AIR;
-      data[2 * y + 1 + DIM / 2][2 * x + 7] = c !== " " ? State.WALL : State.AIR;
-    }
-  }
-
-  let y = DIM - 30;
-  for (let i = 0; i < 5; i++) {
-    y += 5;
-    let x = Math.floor(((Math.random() * 2 - 1) * DIM) / 4) + DIM / 2;
-    for (let col = x; col < x + 15; col++) {
+  for (let y = 30; y < HEIGHT; y += 2) {
+    const width = Math.floor(Math.random() * 5) + 5;
+    let x = Math.floor(Math.random() * (WIDTH - width));
+    for (let col = x; col < x + width; col++) {
       data[y][col] = State.WALL;
     }
   }
@@ -84,22 +63,10 @@ X  X X  X   X    X    X  X X      X  X X  X
     return Math.floor(Math.random() * 4) / 4;
   }
 
-  let fall = true;
-  function addSand(e: MouseEvent) {
-    if (!(e.buttons & 1)) return;
-    fall = false;
-    const col = Math.floor(e.clientX / RES);
-    const row = Math.floor(e.clientY / RES);
-    data[row][col] = State.AIR;
-  }
-
-  canvas.addEventListener("mousemove", addSand);
-  canvas.addEventListener("mousedown", addSand);
-
   function render() {
     // Render
-    for (let row = 0; row < DIM; row++) {
-      for (let col = 0; col < DIM; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      for (let col = 0; col < WIDTH; col++) {
         c.fillStyle = COLOR_MAP.get(data[row][col])!;
         if (data[row][col] < 1 && data[row][col] > 0) {
           c.fillStyle = `hsl(300, ${data[row][col] * 40 + 60}%, 50%)`;
@@ -109,8 +76,8 @@ X  X X  X   X    X    X  X X      X  X X  X
     }
     // Update
     for (let offset = 0; offset < 4; offset++) {
-      for (let row = Math.floor(offset / 2); row < DIM - 1; row += 2) {
-        for (let col = offset % 2; col < DIM - 1; col += 2) {
+      for (let row = Math.floor(offset / 2); row < HEIGHT - 1; row += 2) {
+        for (let col = offset % 2; col < WIDTH - 1; col += 2) {
           for (const [before, after] of transitions) {
             const sands: number[] = [];
             if (
@@ -147,14 +114,12 @@ X  X X  X   X    X    X  X X      X  X X  X
         }
       }
     }
-    if (fall) {
-      data[0][DIM / 2 + Math.floor(Math.random() * 25 - 12)] = sand();
-      data[0][
-        DIM / 2 + Math.floor((Math.random() * DIM) / 2 - DIM / 4)
-      ] = sand();
-      data[0][Math.floor(Math.random() * DIM)] = sand();
-    }
-    setTimeout(render, 300);
+    data[0][WIDTH / 2 + Math.floor(Math.random() * 25 - 12)] = sand();
+    data[0][
+      WIDTH / 2 + Math.floor((Math.random() * WIDTH) / 2 - WIDTH / 4)
+    ] = sand();
+    data[0][Math.floor(Math.random() * WIDTH)] = sand();
+    setTimeout(render, 0);
   }
 
   requestAnimationFrame(render);

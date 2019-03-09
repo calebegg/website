@@ -3,6 +3,7 @@ import { main as squiggle } from "./squiggle";
 import { main as swarm } from "./swarm";
 import { main as waves } from "./waves";
 import { main as jpeg } from "./jpeg";
+import { main as sand } from "./sand";
 
 const mains: { [k: string]: typeof cmyk } = {
   cmyk,
@@ -10,6 +11,7 @@ const mains: { [k: string]: typeof cmyk } = {
   swarm,
   waves,
   jpeg,
+  sand,
 };
 
 function subjectivelyChoose<T>(array: T[]): T {
@@ -37,6 +39,3 @@ function subjectivelyChoose<T>(array: T[]): T {
 (mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains)))(
   document.getElementById("target")!,
 );
-
-const details = document.getElementsByTagName("details")[0];
-details.style.width = `${details.clientWidth - 16}px`;

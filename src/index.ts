@@ -4,6 +4,8 @@ import { main as swarm } from "./swarm";
 import { main as waves } from "./waves";
 import { main as jpeg } from "./jpeg";
 import { main as sand } from "./sand";
+import { main as dithering } from "./dithering";
+import { main as burnout } from "./burnout";
 
 const mains: { [k: string]: typeof cmyk } = {
   cmyk,
@@ -12,6 +14,8 @@ const mains: { [k: string]: typeof cmyk } = {
   waves,
   jpeg,
   sand,
+  dithering,
+  burnout,
 };
 
 function subjectivelyChoose<T>(array: T[]): T {

@@ -98,8 +98,12 @@ export function main(target: HTMLElement) {
 
     c.drawImage(offscreen, 0, 0);
 
-    requestAnimationFrame(render);
+    handle = requestAnimationFrame(render);
   }
 
-  requestAnimationFrame(render);
+  let handle = requestAnimationFrame(render);
+
+  return () => {
+    cancelAnimationFrame(handle);
+  };
 }

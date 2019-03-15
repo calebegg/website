@@ -93,8 +93,12 @@ export function main(target: HTMLElement) {
       startWave();
       if (frame > 400 * 5) waves.shift();
     }
-    requestAnimationFrame(render);
+    handle = requestAnimationFrame(render);
   }
 
-  render();
+  let handle = requestAnimationFrame(render);
+
+  return () => {
+    cancelAnimationFrame(handle);
+  };
 }

@@ -11,7 +11,6 @@ export function main(target: HTMLElement) {
   const WIDTH = Math.floor(innerWidth / RES) + 1;
   const HEIGHT = Math.floor(innerHeight / RES) + 1;
   c.translate(((innerWidth % RES) - RES) / 2, (innerHeight % RES) - RES);
-  console.log(innerHeight % RES);
 
   enum State {
     AIR,
@@ -51,8 +50,8 @@ export function main(target: HTMLElement) {
     }
   }
 
-  for (let y = 30; y < HEIGHT; y += 2) {
-    const width = Math.floor(Math.random() * 5) + 5;
+  for (let y = 30; y < HEIGHT; y += 4) {
+    const width = Math.floor(Math.random() * 10) + 10;
     let x = Math.floor(Math.random() * (WIDTH - width));
     for (let col = x; col < x + width; col++) {
       data[y][col] = State.WALL;
@@ -119,8 +118,12 @@ export function main(target: HTMLElement) {
       WIDTH / 2 + Math.floor((Math.random() * WIDTH) / 2 - WIDTH / 4)
     ] = sand();
     data[0][Math.floor(Math.random() * WIDTH)] = sand();
-    setTimeout(render, 60);
+    handle = setTimeout(render, 60);
   }
 
-  requestAnimationFrame(render);
+  let handle = setTimeout(render, 0);
+
+  return () => {
+    clearTimeout(handle);
+  };
 }

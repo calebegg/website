@@ -11,4 +11,5 @@ export function main(target: HTMLElement) {
     div.className = `color-dot ${color}`;
     target.appendChild(div);
   }
+  return () => {};
 }

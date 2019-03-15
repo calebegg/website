@@ -1,5 +1,4 @@
 import { main as cmyk } from "./cmyk";
-import { main as squiggle } from "./squiggle";
 import { main as swarm } from "./swarm";
 import { main as waves } from "./waves";
 import { main as jpeg } from "./jpeg";
@@ -7,9 +6,12 @@ import { main as sand } from "./sand";
 import { main as dithering } from "./dithering";
 import { main as burnout } from "./burnout";
 
+interface WindowWithCancel extends Window {
+  cancel: () => void;
+}
+
 const mains: { [k: string]: typeof cmyk } = {
   cmyk,
-  squiggle,
   swarm,
   waves,
   jpeg,
@@ -40,6 +42,22 @@ function subjectivelyChoose<T>(array: T[]): T {
   return array[index];
 }
 
-(mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains)))(
-  document.getElementById("target")!,
-);
+function main() {
+  const wwc = window as WindowWithCancel;
+
+  if (wwc.cancel) {
+    wwc.cancel();
+    document.getElementById("target")!.innerHTML = "";
+  }
+
+  wwc.cancel = (mains[location.hash.substr(1)] ||
+    subjectivelyChoose(Object.values(mains)))(
+    document.getElementById("target")!,
+  );
+}
+
+main();
+
+document.addEventListener("keydown", e => {
+  if (e.keyCode === 32) main();
+});

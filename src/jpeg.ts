@@ -1,3 +1,5 @@
+let iter = 0;
+
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
   canvas.width = window.innerWidth * 2;
@@ -17,20 +19,12 @@ export function main(target: HTMLElement) {
 
   let frame = 0;
   async function render() {
+    let thisIter = iter;
     frame++;
-    let quality = Math.random() * 0.05 + 0.95;
-    let offset = Math.random() * 2;
-    let tearChance = 0.05;
-    if (frame > 400) {
-      quality = Math.random() * 0.8 + 0.2;
-      offset = Math.random() * 9;
-      tearChance = 0.1;
-    }
-    if (frame > 1000) {
-      quality = Math.random();
-      offset = Math.random() * 31;
-      tearChance = 0.2;
-    }
+    const progress = Math.min(frame, 500) / 500;
+    let quality = 1 - Math.random() * progress;
+    let offset = Math.random() * progress * 13;
+    let tearChance = 0.05 * (1 + progress);
     const img = await new Promise<HTMLImageElement>(r => {
       const i = new Image();
       i.src = canvas.toDataURL("image/jpeg", quality);
@@ -64,7 +58,12 @@ export function main(target: HTMLElement) {
       innerWidth * 2,
       innerHeight * 2 - cutoff,
     );
-    requestAnimationFrame(render);
+    if (thisIter === iter) handle = requestAnimationFrame(render);
   }
-  requestAnimationFrame(render);
+  let handle = requestAnimationFrame(render);
+
+  return () => {
+    iter++;
+    cancelAnimationFrame(handle);
+  };
 }

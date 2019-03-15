@@ -45,7 +45,7 @@ export function main(target: HTMLElement) {
   c.lineWidth = 4;
   c.lineCap = "round";
 
-  setInterval(() => {
+  const handle = setInterval(() => {
     c.fillStyle = "#ff0";
     c.fillRect(0, 0, W, H);
 
@@ -137,4 +137,8 @@ export function main(target: HTMLElement) {
     }
     c.globalCompositeOperation = "source-over";
   }, 16);
+
+  return () => {
+    clearInterval(handle);
+  };
 }

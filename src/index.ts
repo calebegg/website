@@ -5,6 +5,7 @@ import { main as jpeg } from "./jpeg";
 import { main as sand } from "./sand";
 import { main as dithering } from "./dithering";
 import { main as burnout } from "./burnout";
+import { main as bubbles } from "./bubbles";
 
 interface WindowWithCancel extends Window {
   cancel: () => void;
@@ -18,6 +19,7 @@ const mains: { [k: string]: typeof cmyk } = {
   sand,
   dithering,
   burnout,
+  bubbles,
 };
 
 function subjectivelyChoose<T>(array: T[]): T {

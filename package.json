@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "@types/three": "^0.103.2",
-    "parcel": "^1.11.0",
-    "postcss-modules": "^1.4.1",
+    "parcel": "^1.12.4",
+    "postcss-modules": "^1.5.0",
     "three": "^0.109.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.7.4"
   },
   "scripts": {
     "start": "parcel src/index.html",
@@ -16,6 +16,6 @@
     "trailingComma": "all"
   },
   "browserslist": [
-    "since 2017-06"
+    "last 2 chrome versions"
   ]
 }

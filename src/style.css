@@ -1,9 +1,14 @@
 body {
   position: relative;
   margin: 0;
-  font-family: Helvetica, sans-serif;
+  height: 100%;
+  font-family: Helvetica, Roboto, sans-serif;
   font-size: 14px;
   color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 #target {
@@ -15,42 +20,14 @@ body {
   z-index: -1;
 }
 
-details {
+main {
   background: white;
   border: solid #333 5px;
-  position: absolute;
-  right: 8px;
-  top: 8px;
   padding: 8px;
-  max-width: 200px;
-}
-
-details > summary {
-  list-style: none;
-  cursor: pointer;
-  margin: -8px;
-  padding: 8px;
-  padding-bottom: 0;
-  margin-bottom: 0;
-  border-bottom: solid transparent 1px;
-}
-
-details > summary:focus {
-  outline: none;
-  border-color: black;
-  border-color: -webkit-focus-ring-color;
-}
-
-details > summary::-webkit-details-marker {
-  display: none;
-}
-
-details > :last-child {
-  margin-bottom: 0;
+  width: 400px;
 }
 
 h1 {
-  text-align: right;
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
 }

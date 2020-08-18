@@ -1,12 +1,8 @@
 {
   "name": "website",
   "version": "0.0.1",
-  "dependencies": {
-    "@types/three": "^0.103.2",
-    "parcel": "^1.12.4",
-    "postcss-modules": "^1.5.0",
-    "three": "^0.109.0",
-    "typescript": "^3.7.4"
+  "devDependencies": {
+    "parcel": "^2.0.0-beta1"
   },
   "scripts": {
     "start": "parcel src/index.html",

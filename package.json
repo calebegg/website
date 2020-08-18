@@ -2,7 +2,7 @@
   "name": "website",
   "version": "0.0.1",
   "devDependencies": {
-    "parcel": "^2.0.0-beta1"
+    "parcel": "^1.12.4"
   },
   "scripts": {
     "start": "parcel src/index.html",

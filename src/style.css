@@ -2,7 +2,7 @@ body {
   position: relative;
   margin: 0;
   height: 100%;
-  font-family: Helvetica, Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
   font-size: 14px;
   color: #333;
   display: flex;
@@ -25,6 +25,11 @@ main {
   border: solid #333 5px;
   padding: 8px;
   width: 400px;
+}
+
+h1,
+h2 {
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 h1 {

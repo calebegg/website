@@ -45,21 +45,20 @@ function subjectivelyChoose<T>(array: T[]): T {
 }
 
 function main() {
-  const wwc = window as WindowWithCancel;
+  const wwc = (window as unknown) as WindowWithCancel;
 
   if (wwc.cancel) {
     wwc.cancel();
     document.getElementById("target")!.innerHTML = "";
   }
 
-  wwc.cancel = (mains[location.hash.substr(1)] ||
-    subjectivelyChoose(Object.values(mains)))(
-    document.getElementById("target")!,
-  );
+  wwc.cancel = (
+    mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains))
+  )(document.getElementById("target")!);
 }
 
 main();
 
-document.addEventListener("keydown", e => {
+document.addEventListener("keydown", (e) => {
   if (e.keyCode === 32) main();
 });

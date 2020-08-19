@@ -24,7 +24,7 @@ main {
   background: white;
   border: solid #333 5px;
   padding: 8px;
-  width: 400px;
+  max-width: 400px;
 }
 
 h1,

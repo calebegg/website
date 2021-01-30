@@ -17,14 +17,11 @@ export function main(target: HTMLElement) {
 
   c.scale(0.5, 0.5);
 
-  let frame = 0;
   async function render() {
     let thisIter = iter;
-    frame++;
-    const progress = Math.min(frame, 500) / 500;
-    let quality = 1 - Math.random() * progress;
-    let offset = Math.random() * progress * 13;
-    let tearChance = 0.05 * (1 + progress);
+    let quality = Math.random();
+    let offset = Math.random() * 13;
+    let tearChance = 0.1;
     const img = await new Promise<HTMLImageElement>(r => {
       const i = new Image();
       i.src = canvas.toDataURL("image/jpeg", quality);

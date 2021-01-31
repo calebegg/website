@@ -32,7 +32,7 @@ void main() {
   float y = RESOLUTION.y - gl_FragCoord.y;
   gl_FragColor = encode(at(x, y));
   // Walls
-  if (y == RESOLUTION.y - 0.5 || x == RESOLUTION.x - 0.5 || x == 0.5) {
+  if (y == RESOLUTION.y - 0.5) {
     gl_FragColor = encode(-1);
     return;
   }

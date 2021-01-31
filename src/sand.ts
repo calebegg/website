@@ -1,129 +1,257 @@
+const SCALE = 4;
+
+const offsets = (function* () {
+  while (true) {
+    yield [0, 0];
+    yield [0, 1];
+    yield [1, 0];
+    yield [1, 1];
+  }
+})();
+
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
-  canvas.width = innerWidth * 2;
-  canvas.height = innerHeight * 2;
+  const W = (canvas.width = innerWidth / SCALE);
+  const H = (canvas.height = innerHeight / SCALE);
   canvas.style.width = `${innerWidth}px`;
+  canvas.style.imageRendering = "pixelated";
   target.appendChild(canvas);
-  const c = canvas.getContext("2d")!;
-  c.scale(2, 2);
+  const gl = canvas.getContext("webgl")!;
 
-  const RES = Math.floor(innerWidth / 150);
-  const WIDTH = Math.floor(innerWidth / RES) + 1;
-  const HEIGHT = Math.floor(innerHeight / RES) + 1;
-  c.translate(((innerWidth % RES) - RES) / 2, (innerHeight % RES) - RES);
-
-  enum State {
-    AIR,
-    SAND,
-    WALL,
-  }
-
-  const CHAR_MAP = new Map([
-    ["S", State.SAND],
-    ["A", State.AIR],
-    ["W", State.WALL],
-  ]);
-
-  const COLOR_MAP = new Map([
-    [State.SAND, "magenta"],
-    [State.AIR, "yellow"],
-    [State.WALL, "black"],
-  ]);
-  const OFFSETS = [[0, 0], [0, 1], [1, 0], [1, 1]];
-
-  const data: (State | number)[][] = [];
-
-  const transitions = [
-    // Sand
-    ["1*/A*", "A*/1*"],
-    ["*1/*A", "*A/*1"],
-    ["1A/2A", "AA/21"],
-    ["A1/A2", "AA/12"],
-    ["1A/WA", "AA/W1"],
-    ["A1/AW", "AA/1W"],
-  ];
-
-  for (let r = 0; r < HEIGHT; r++) {
-    data.push([]);
-    for (let c = 0; c < WIDTH; c++) {
-      data[r][c] = State.AIR;
+  function createProgram(gl: WebGLRenderingContext, shader: string) {
+    const vertex = gl.createShader(gl.VERTEX_SHADER)!;
+    gl.shaderSource(
+      vertex,
+      `
+    precision mediump float;
+    attribute vec2 position;
+    void main() {
+          gl_Position = vec4(position, 0.0, 1.0);
     }
-  }
-
-  for (let y = 30; y < HEIGHT; y += 4) {
-    const width = Math.floor(Math.random() * 10) + 10;
-    let x = Math.floor(Math.random() * (WIDTH - width));
-    for (let col = x; col < x + width; col++) {
-      data[y][col] = State.WALL;
+    `,
+    );
+    gl.compileShader(vertex);
+    if (!gl.getShaderParameter(vertex, gl.COMPILE_STATUS)) {
+      throw new Error(gl.getShaderInfoLog(vertex)!);
     }
-  }
-
-  function sand() {
-    return Math.floor(Math.random() * 4) / 4;
-  }
-
-  function render() {
-    // Render
-    for (let row = 0; row < HEIGHT; row++) {
-      for (let col = 0; col < WIDTH; col++) {
-        c.fillStyle = COLOR_MAP.get(data[row][col])!;
-        if (data[row][col] < 1 && data[row][col] > 0) {
-          c.fillStyle = `hsl(300, ${data[row][col] * 40 + 60}%, 50%)`;
-        }
-        c.fillRect(col * RES, row * RES, RES, RES);
-      }
+    const fragment = gl.createShader(gl.FRAGMENT_SHADER)!;
+    gl.shaderSource(fragment, shader);
+    gl.compileShader(fragment);
+    if (!gl.getShaderParameter(fragment, gl.COMPILE_STATUS)) {
+      throw new Error(gl.getShaderInfoLog(fragment)!);
     }
-    // Update
-    for (let offset = 0; offset < 4; offset++) {
-      for (let row = Math.floor(offset / 2); row < HEIGHT - 1; row += 2) {
-        for (let col = offset % 2; col < WIDTH - 1; col += 2) {
-          for (const [before, after] of transitions) {
-            const sands: number[] = [];
-            if (
-              OFFSETS.every(([rowOff, colOff]) => {
-                const char = before
-                  .replace(/\//g, "")
-                  .charAt(colOff + rowOff * 2);
-                let datum = data[row + rowOff][col + colOff];
-                if (datum > 0 && datum < 1) {
-                  if (char.match(/\d/)) {
-                    sands[+char] = datum;
-                    return true;
-                  } else {
-                    return char === "*";
-                  }
-                }
-                return char === "*" || char === State[datum].charAt(0);
-              })
-            ) {
-              for (const [rowOff, colOff] of OFFSETS) {
-                const char = after
-                  .replace(/\//g, "")
-                  .charAt(colOff + rowOff * 2);
-                if (char === "*") continue;
-                if (char.match(/\d/)) {
-                  data[row + rowOff][col + colOff] = sands[+char];
-                } else {
-                  data[row + rowOff][col + colOff] = CHAR_MAP.get(char)!;
-                }
-              }
-              break;
-            }
-          }
-        }
-      }
+    const program = gl.createProgram()!;
+    gl.attachShader(program, vertex);
+    gl.attachShader(program, fragment);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      throw new Error(gl.getProgramInfoLog(program)!);
     }
-    data[0][WIDTH / 2 + Math.floor(Math.random() * 25 - 12)] = sand();
-    data[0][
-      WIDTH / 2 + Math.floor((Math.random() * WIDTH) / 2 - WIDTH / 4)
-    ] = sand();
-    data[0][Math.floor(Math.random() * WIDTH)] = sand();
-    handle = setTimeout(render, 60);
+    return program;
   }
 
-  let handle = setTimeout(render, 0);
+  interface BufferData {
+    buffer: WebGLFramebuffer;
+    texture: WebGLTexture;
+    index: number;
+  }
+
+  function createBuffer(
+    gl: WebGLRenderingContext,
+    width: number,
+    height: number,
+    index: 0 | 2,
+  ): BufferData {
+    const buffer = gl.createFramebuffer()!;
+    gl.getExtension("OES_texture_float");
+    const texture = gl.createTexture()!;
+    gl.activeTexture(gl.TEXTURE0 + index);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      Math.floor(width),
+      Math.floor(height),
+      0,
+      gl.RGBA,
+      gl.FLOAT,
+      null,
+    );
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+      throw new Error("Framebuffer incomplete");
+    }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return { buffer, texture, index };
+  }
+
+  let timerId = -1;
+  let frame = 0;
+
+  const computeProgram = createProgram(
+    gl,
+    `
+precision mediump float;
+uniform vec2 RESOLUTION;
+uniform sampler2D DATA;
+uniform vec2 OFFSET;
+uniform vec2 CLICK;
+uniform int CLICK_STATE;
+uniform float FRAME;
+// Modified from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+highp float rand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(vec2(co.x - FRAME, co.y + FRAME) ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+vec4 encode(int val) {
+  float r = float(val + 1);
+  return vec4(r, val == 0 ? 1.0 : 0.0, val == 1 ? 1.0 : 0.0, 1.0);
+}
+int at(float x, float y) {
+  return int(texture2D(DATA, vec2(x, RESOLUTION.y - y) / RESOLUTION).r) - 1;
+}
+void main() {
+  if (FRAME == 1.0) {
+    gl_FragColor = encode(0);
+    return;
+  }
+  float x = gl_FragCoord.x;
+  float y = RESOLUTION.y - gl_FragCoord.y;
+  gl_FragColor = encode(at(x, y));
+  if (x == CLICK.x + 0.5 && y == CLICK.y + 0.5) {
+    gl_FragColor = encode(CLICK_STATE);
+    return;
+  }
+  // Walls
+  if (y == RESOLUTION.y - 0.5 || x == RESOLUTION.x - 0.5 || x == 0.5) {
+    gl_FragColor = encode(2);
+    return;
+  }
+  // Sand source
+  if (y == 1.5 && rand(vec2(x, y)) > .99) {
+    gl_FragColor = encode(1);
+  }
+  // Intermediate walls
+  if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
+    gl_FragColor = encode(2);
+  }
+  if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
+    gl_FragColor = encode(2);
+  }
+  if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
+    gl_FragColor = encode(2);
+  }
+  vec2 ul;
+  ul.x = x - mod(x + OFFSET.x, 2.0) + 0.5;
+  ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
+  
+  if (at(ul.x, ul.y) == 1 && at(ul.x, ul.y + 1.0) == 0) {
+    if (x == ul.x && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    }
+    return;
+  }
+
+  if (at(ul.x + 1.0, ul.y) == 1 && at(ul.x + 1.0, ul.y + 1.0) == 0) {
+    if (x == ul.x + 1.0 && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x + 1.0 && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    }
+    return;
+  }
+
+  if (at(ul.x, ul.y) == 1 && at(ul.x + 1.0, ul.y) == 0 && at(ul.x, ul.y + 1.0) == 1 && at(ul.x + 1.0, ul.y + 1.0) == 0) {
+    if (x == ul.x && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x + 1.0 && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    } else if (x == ul.x + 1.0 && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    }
+    return;
+  }
+
+  if (at(ul.x, ul.y) == 0 && at(ul.x + 1.0, ul.y) == 1 && at(ul.x, ul.y + 1.0) == 0 && at(ul.x + 1.0, ul.y + 1.0) == 1) {
+    if (x == ul.x && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x + 1.0 && y == ul.y) {
+      gl_FragColor = encode(0);
+    } else if (x == ul.x && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    } else if (x == ul.x + 1.0 && y == ul.y + 1.0) {
+      gl_FragColor = encode(1);
+    }
+    return;
+  }
+}
+  `,
+  );
+
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+  let input: BufferData;
+  let output: BufferData;
+
+  input = createBuffer(gl, W, H, 0);
+  output = createBuffer(gl, W, H, 2);
+  gl.useProgram(computeProgram);
+  const verticesLoc = gl.getAttribLocation(computeProgram, "position");
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+    gl.STATIC_DRAW,
+  );
+  gl.enableVertexAttribArray(verticesLoc);
+  gl.vertexAttribPointer(verticesLoc, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform2f(
+    gl.getUniformLocation(computeProgram, "RESOLUTION"),
+    Math.floor(W),
+    Math.floor(H),
+  );
+
+  function loop() {
+    frame++;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, output.buffer);
+    gl.uniform1i(gl.getUniformLocation(computeProgram, "DATA"), input.index);
+    gl.uniform1f(gl.getUniformLocation(computeProgram, "FRAME"), frame);
+    gl.uniform2fv(
+      gl.getUniformLocation(computeProgram, "OFFSET"),
+      offsets.next().value,
+    );
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      gl.COLOR_ATTACHMENT0,
+      gl.TEXTURE_2D,
+      output.texture,
+      0,
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    // swap input and output
+    [input, output] = [output, input];
+    timerId = requestAnimationFrame(loop);
+  }
+
+  loop();
 
   return () => {
-    clearTimeout(handle);
+    cancelAnimationFrame(timerId);
   };
 }

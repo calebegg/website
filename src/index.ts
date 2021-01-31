@@ -44,6 +44,13 @@ function subjectivelyChoose<T>(array: T[]): T {
   return array[index];
 }
 
+let picked = (target: HTMLElement) => () => {};
+
+function pick() {
+  picked =
+    mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains));
+}
+
 function main() {
   const wwc = (window as unknown) as WindowWithCancel;
 
@@ -52,28 +59,37 @@ function main() {
     document.getElementById("target")!.innerHTML = "";
   }
 
-  wwc.cancel = (
-    mains[location.hash.substr(1)] || subjectivelyChoose(Object.values(mains))
-  )(document.getElementById("target")!);
+  wwc.cancel = picked(document.getElementById("target")!);
 }
 
+pick();
 main();
 
 document.addEventListener("keydown", (e) => {
-  if (e.keyCode === 32) main();
+  if (e.keyCode === 32) {
+    pick();
+    main();
+  }
 });
 
 document.body.addEventListener("click", (e) => {
-  if (e.target === document.body) main();
+  if (e.target === document.body) {
+    pick();
+    main();
+  }
 });
 
+let resizeTimeoutId: NodeJS.Timer;
 function onResize() {
-  document.body.classList.remove("with-scroll");
-  document.body.classList.toggle(
-    "with-scroll",
-    innerHeight < document.body.scrollHeight,
-  );
-  main();
+  clearTimeout(resizeTimeoutId);
+  resizeTimeoutId = setTimeout(() => {
+    document.body.classList.remove("with-scroll");
+    document.body.classList.toggle(
+      "with-scroll",
+      innerHeight < document.body.scrollHeight,
+    );
+    main();
+  }, 50);
 }
 addEventListener("resize", onResize);
 onResize();

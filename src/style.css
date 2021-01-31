@@ -31,12 +31,8 @@ main {
   padding: 8px;
   width: 400px;
   max-width: calc(
-    100vw - /* border= */ 10px - /* padding= */ 16px - /* bleed= */ 75px
+    100vw - /* border= */ 10px - /* padding= */ 16px - /* bleed= */ 80px
   );
-  max-height: calc(
-    100vh - /* border= */ 10px - /* padding= */ 16px - /* bleed= */ 75px
-  );
-  overflow-y: auto;
 }
 
 h1,
@@ -65,4 +61,17 @@ a:focus,
 a:active {
   text-decoration: underline;
   outline: none;
+}
+
+@media (max-height: 700px), (max-width: 480px) {
+  main {
+    margin-top: 40px;
+    margin-bottom: calc(100vh - 40px);
+  }
+
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+  }
 }

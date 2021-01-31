@@ -1,8 +1,5 @@
 const RES = 4;
 
-const W = Math.floor(innerWidth / RES) + 1;
-const H = Math.floor(innerHeight / RES) + 1;
-
 const TH = [
   [0, 48, 12, 60, 3, 51, 15, 63],
   [32, 16, 44, 28, 35, 19, 47, 31],
@@ -15,6 +12,9 @@ const TH = [
 ];
 
 export function main(target: HTMLElement) {
+  const W = Math.floor(innerWidth / RES) + 1;
+  const H = Math.floor(innerHeight / RES) + 1;
+
   const canvas = document.createElement("canvas");
   const offscreen = document.createElement("canvas");
 

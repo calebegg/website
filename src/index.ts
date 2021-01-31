@@ -22,10 +22,6 @@ const mains: { [k: string]: typeof cmyk } = {
   bubbles,
 };
 
-if (innerHeight < document.body.scrollHeight) {
-  document.body.classList.add("with-scroll");
-}
-
 function subjectivelyChoose<T>(array: T[]): T {
   const context: number[] = JSON.parse(
     localStorage.getItem("subjective_context") || "[]",
@@ -67,6 +63,17 @@ document.addEventListener("keydown", (e) => {
   if (e.keyCode === 32) main();
 });
 
-document.body.addEventListener("touchstart", (e) => {
+document.body.addEventListener("click", (e) => {
   if (e.target === document.body) main();
 });
+
+function onResize() {
+  document.body.classList.remove("with-scroll");
+  document.body.classList.toggle(
+    "with-scroll",
+    innerHeight < document.body.scrollHeight,
+  );
+  main();
+}
+addEventListener("resize", onResize);
+onResize();

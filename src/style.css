@@ -28,7 +28,7 @@ main {
   background: white;
   border: solid #333 5px;
   padding: 8px;
-  width: 400px;
+  width: 500px;
   max-width: calc(
     100vw - /* border= */ 10px - /* padding= */ 16px - /* bleed= */ 80px
   );

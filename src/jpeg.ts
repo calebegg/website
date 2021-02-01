@@ -1,60 +1,50 @@
 let iter = 0;
+const dpr = devicePixelRatio || 1;
 
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth * 2;
-  canvas.height = window.innerHeight * 2;
+  const w = (canvas.width = window.innerWidth * dpr);
+  const h = (canvas.height = window.innerHeight * dpr);
   canvas.style.width = `${innerWidth}px`;
   target.appendChild(canvas);
 
   const c = canvas.getContext("2d")!;
-  c.scale(2, 2);
+  c.scale(dpr, dpr);
 
   c.fillStyle = "magenta";
-  c.fillRect(0, 0, innerWidth / 2, innerHeight);
+  c.fillRect(0, 0, w, h);
   c.fillStyle = "yellow";
-  c.fillRect(innerWidth / 2, 0, innerWidth / 2, innerHeight);
+  c.beginPath();
+  c.moveTo(0, 0);
+  c.lineTo(w, 0);
+  c.lineTo(w, h);
+  c.fill();
 
-  c.scale(0.5, 0.5);
+  c.scale(1 / dpr, 1 / dpr);
 
   async function render() {
     let thisIter = iter;
-    let quality = Math.random();
-    let offset = Math.random() * 13;
-    let tearChance = 0.1;
-    const img = await new Promise<HTMLImageElement>(r => {
+
+    const img = await new Promise<HTMLImageElement>((r) => {
       const i = new Image();
-      i.src = canvas.toDataURL("image/jpeg", quality);
+      i.src = canvas.toDataURL("image/jpeg", Math.random() ** 4 + 0.01);
       i.addEventListener("load", () => {
         r(i);
       });
     });
 
-    const cutoff = Math.random() * innerHeight * 2;
-
     c.drawImage(
       img,
       0,
       0,
-      innerWidth * 2,
-      cutoff,
-      Math.random() > tearChance ? 0 : Math.random() < 0.5 ? -offset : offset,
-      1,
-      innerWidth * 2,
-      cutoff,
+      w * dpr,
+      h * dpr,
+      -w / h,
+      -h / w,
+      w * dpr + (w / h) * 4,
+      h * dpr + (h / w) * 4,
     );
 
-    c.drawImage(
-      img,
-      0,
-      cutoff,
-      innerWidth * 2,
-      innerHeight * 2 - cutoff,
-      Math.random() > tearChance ? 0 : Math.random() < 0.5 ? -offset : offset,
-      cutoff + 1,
-      innerWidth * 2,
-      innerHeight * 2 - cutoff,
-    );
     if (thisIter === iter) handle = requestAnimationFrame(render);
   }
   let handle = requestAnimationFrame(render);

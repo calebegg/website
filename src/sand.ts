@@ -13,44 +13,12 @@ const offsets = (function* () {
 
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
-  const W = (canvas.width = innerWidth / SCALE);
-  const H = (canvas.height = innerHeight / SCALE);
+  const w = (canvas.width = innerWidth / SCALE);
+  const h = (canvas.height = innerHeight / SCALE);
   canvas.style.width = `${innerWidth}px`;
   canvas.style.imageRendering = "pixelated";
   target.appendChild(canvas);
   const gl = canvas.getContext("webgl")!;
-
-  function createProgram(gl: WebGLRenderingContext, shader: string) {
-    const vertex = gl.createShader(gl.VERTEX_SHADER)!;
-    gl.shaderSource(
-      vertex,
-      `
-    precision mediump float;
-    attribute vec2 position;
-    void main() {
-          gl_Position = vec4(position, 0.0, 1.0);
-    }
-    `,
-    );
-    gl.compileShader(vertex);
-    if (!gl.getShaderParameter(vertex, gl.COMPILE_STATUS)) {
-      throw new Error(gl.getShaderInfoLog(vertex)!);
-    }
-    const fragment = gl.createShader(gl.FRAGMENT_SHADER)!;
-    gl.shaderSource(fragment, shader);
-    gl.compileShader(fragment);
-    if (!gl.getShaderParameter(fragment, gl.COMPILE_STATUS)) {
-      throw new Error(gl.getShaderInfoLog(fragment)!);
-    }
-    const program = gl.createProgram()!;
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      throw new Error(gl.getProgramInfoLog(program)!);
-    }
-    return program;
-  }
 
   interface BufferData {
     buffer: WebGLFramebuffer;
@@ -94,15 +62,42 @@ export function main(target: HTMLElement) {
   let timerId = -1;
   let frame = 0;
 
-  const computeProgram = createProgram(gl, shader);
+  const vertex = gl.createShader(gl.VERTEX_SHADER)!;
+  gl.shaderSource(
+    vertex,
+    `
+    precision mediump float;
+    attribute vec2 position;
+    void main() {
+          gl_Position = vec4(position, 0.0, 1.0);
+    }
+    `,
+  );
+  gl.compileShader(vertex);
+  if (!gl.getShaderParameter(vertex, gl.COMPILE_STATUS)) {
+    throw new Error(gl.getShaderInfoLog(vertex)!);
+  }
+  const fragment = gl.createShader(gl.FRAGMENT_SHADER)!;
+  gl.shaderSource(fragment, shader);
+  gl.compileShader(fragment);
+  if (!gl.getShaderParameter(fragment, gl.COMPILE_STATUS)) {
+    throw new Error(gl.getShaderInfoLog(fragment)!);
+  }
+  const computeProgram = gl.createProgram()!;
+  gl.attachShader(computeProgram, vertex);
+  gl.attachShader(computeProgram, fragment);
+  gl.linkProgram(computeProgram);
+  if (!gl.getProgramParameter(computeProgram, gl.LINK_STATUS)) {
+    throw new Error(gl.getProgramInfoLog(computeProgram)!);
+  }
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
   let input: BufferData;
   let output: BufferData;
 
-  input = createBuffer(gl, W, H, 0);
-  output = createBuffer(gl, W, H, 2);
+  input = createBuffer(gl, w, h, 0);
+  output = createBuffer(gl, w, h, 2);
   gl.useProgram(computeProgram);
   const verticesLoc = gl.getAttribLocation(computeProgram, "position");
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -115,8 +110,8 @@ export function main(target: HTMLElement) {
   gl.vertexAttribPointer(verticesLoc, 2, gl.FLOAT, false, 0, 0);
   gl.uniform2f(
     gl.getUniformLocation(computeProgram, "RESOLUTION"),
-    Math.floor(W),
-    Math.floor(H),
+    Math.floor(w),
+    Math.floor(h),
   );
 
   function loop() {

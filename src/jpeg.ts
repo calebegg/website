@@ -41,8 +41,8 @@ export function main(target: HTMLElement) {
       h * dpr,
       -w / h,
       -h / w,
-      w * dpr + (w / h) * 4,
-      h * dpr + (h / w) * 4,
+      w * dpr + (w / h) * 2,
+      h * dpr + (h / w) * 2,
     );
 
     if (thisIter === iter) handle = requestAnimationFrame(render);

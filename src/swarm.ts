@@ -1,9 +1,9 @@
 const dpr = devicePixelRatio || 1;
 
-const W = window.innerWidth;
-const H = window.innerHeight;
-
 export function main(target: HTMLElement) {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
   let canvas = document.createElement("canvas");
   target.appendChild(canvas);
 

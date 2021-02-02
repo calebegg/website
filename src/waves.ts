@@ -38,7 +38,7 @@ export function main(target: HTMLElement) {
 
   let frame = 0;
 
-  c.fillStyle = "#f0f";
+  c.fillStyle = "#ff0";
   c.fillRect(0, 0, WIDTH, HEIGHT);
 
   function render() {
@@ -46,7 +46,7 @@ export function main(target: HTMLElement) {
 
     let prevWave: Wave | null = null;
     for (const { age, peak } of waves) {
-      c.fillStyle = `hsl(${-60 + 9000 / age}deg, 100%, 50%)`;
+      c.fillStyle = `hsl(${60 - 9000 / age}deg, 100%, 50%)`;
       for (let i = 0; i < WIDTH; i++) {
         c.fillRect(i, HEIGHT - peak[i], 1, HEIGHT);
       }
@@ -54,7 +54,7 @@ export function main(target: HTMLElement) {
     for (let wave of waves) {
       wave.age++;
       const { age, ys, peak, dys } = wave;
-      c.fillStyle = `hsl(60deg, ${7000 / age + 50}%, 50%)`;
+      c.fillStyle = `hsl(300deg, ${7000 / age + 50}%, 50%)`;
       for (let i = 0; i < WIDTH; i++) {
         c.fillRect(i, HEIGHT - ys[i], 1, HEIGHT);
         if (ys[i] > peak[i]) {

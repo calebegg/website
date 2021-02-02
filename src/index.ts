@@ -79,6 +79,11 @@ document.body.addEventListener("click", (e) => {
   }
 });
 
+addEventListener("hashchange", () => {
+  pick();
+  main();
+});
+
 let resizeTimeoutId: NodeJS.Timer;
 function onResize() {
   clearTimeout(resizeTimeoutId);

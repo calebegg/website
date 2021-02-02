@@ -44,7 +44,6 @@ export function main(target: HTMLElement) {
           Math.sin(Math.sqrt(2) * t - frame / 143) +
           Math.sin(Math.sqrt(3) * t + frame / 29);
         const pass = v * 32 + 32 - 0.5 < TH[x % TH.length][y % TH.length];
-        //c.fillRect(x, y, 1, 1);
         image.data[(x + y * W) * 4] = 255;
         image.data[(x + y * W) * 4 + 1] = pass ? 0 : 255;
         image.data[(x + y * W) * 4 + 2] = !pass ? 0 : 255;

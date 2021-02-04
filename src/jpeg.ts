@@ -1,26 +1,22 @@
 let iter = 0;
-const dpr = devicePixelRatio || 1;
 
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
-  const w = (canvas.width = window.innerWidth * dpr);
-  const h = (canvas.height = window.innerHeight * dpr);
+  const w = (canvas.width = innerWidth);
+  const h = (canvas.height = innerHeight);
   canvas.style.width = `${innerWidth}px`;
   target.appendChild(canvas);
 
   const c = canvas.getContext("2d")!;
-  c.scale(dpr, dpr);
 
-  c.fillStyle = "magenta";
-  c.fillRect(0, 0, w, h);
   c.fillStyle = "yellow";
+  c.fillRect(0, 0, innerWidth, innerHeight);
+  c.fillStyle = "magenta";
   c.beginPath();
   c.moveTo(0, 0);
-  c.lineTo(w, 0);
-  c.lineTo(w, h);
+  c.lineTo(0, innerHeight);
+  c.lineTo(innerWidth, innerHeight);
   c.fill();
-
-  c.scale(1 / dpr, 1 / dpr);
 
   async function render() {
     let thisIter = iter;
@@ -37,12 +33,12 @@ export function main(target: HTMLElement) {
       img,
       0,
       0,
-      w * dpr,
-      h * dpr,
+      w,
+      h,
       -w / h,
       -h / w,
-      w * dpr + (w / h) * 2,
-      h * dpr + (h / w) * 2,
+      w + (w / h) * 2,
+      h + (h / w) * 2,
     );
 
     if (thisIter === iter) handle = requestAnimationFrame(render);

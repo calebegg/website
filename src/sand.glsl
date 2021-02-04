@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 uniform vec2 RESOLUTION;
 uniform sampler2D DATA;
 uniform vec2 OFFSET;

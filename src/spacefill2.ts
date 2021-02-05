@@ -1,5 +1,5 @@
 const SPEED = 1;
-const AGE_LIMIT = 2500;
+const AGE_LIMIT = 5000;
 
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");

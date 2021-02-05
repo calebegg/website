@@ -17,7 +17,7 @@ export function main(target: HTMLElement) {
     c.fillRect(0, 0, innerWidth, innerHeight);
     c.fillStyle = "magenta";
     const angle = Math.random() * 2 * Math.PI;
-    if (Math.random() < 1.1 && balls.every((b) => b.x > RADIUS * 2)) {
+    if (Math.random() < 0.1 && balls.every((b) => b.x > RADIUS * 2)) {
       balls.push({
         x: innerWidth / 2,
         y: innerHeight / 2,

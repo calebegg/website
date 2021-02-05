@@ -1,5 +1,5 @@
 const RADIUS = 10;
-const SPEED = 4;
+const SPEED = 6;
 
 export function main(target: HTMLElement) {
   const canvas = document.createElement("canvas");
@@ -10,20 +10,21 @@ export function main(target: HTMLElement) {
   canvas.style.width = `${innerWidth}px`;
   c.scale(devicePixelRatio, devicePixelRatio);
 
-  const balls = Array.from({ length: 100 }, () => {
-    const theta = Math.random() * 2 * Math.PI;
-    return {
-      x: innerWidth * Math.random(),
-      y: innerHeight * Math.random(),
-      dx: Math.cos(theta) * SPEED,
-      dy: Math.sin(theta) * SPEED,
-    };
-  });
+  let balls: Array<{ x: number; y: number; dx: number; dy: number }> = [];
 
   function render() {
     c.fillStyle = "rgba(255, 255, 0, .5)";
     c.fillRect(0, 0, innerWidth, innerHeight);
     c.fillStyle = "magenta";
+    const angle = Math.random() * 2 * Math.PI;
+    if (Math.random() < 1.1 && balls.every((b) => b.x > RADIUS * 2)) {
+      balls.push({
+        x: innerWidth / 2,
+        y: innerHeight / 2,
+        dx: Math.cos(angle) * SPEED,
+        dy: Math.sin(angle) * SPEED,
+      });
+    }
     for (const b of balls) {
       b.x += b.dx;
       b.y += b.dy;

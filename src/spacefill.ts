@@ -11,6 +11,7 @@ export function main(target: HTMLElement) {
   c.strokeStyle = "magenta";
   c.lineWidth = 4;
 
+  const badPixels: boolean[][] = Array.from({ length: innerWidth }, () => []);
   const circles = [
     {
       x: innerWidth / 2,
@@ -33,10 +34,14 @@ export function main(target: HTMLElement) {
     let bestR = -1;
     for (let x = 0; x < innerWidth; x++) {
       outer: for (let y = 0; y < innerHeight; y++) {
+        if (badPixels[x][y]) continue;
         let minDist = innerHeight + innerWidth;
         for (const c of circles) {
           const dist = Math.sqrt((x - c.x) ** 2 + (y - c.y) ** 2);
-          if (dist < c.r) continue outer;
+          if (dist < c.r) {
+            badPixels[x][y] = true;
+            continue outer;
+          }
           minDist = Math.min(minDist, dist - c.r);
         }
         if (x + minDist > innerWidth) continue;

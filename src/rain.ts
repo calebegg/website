@@ -9,10 +9,6 @@ export function main(target: HTMLElement) {
   canvas.height = innerHeight * devicePixelRatio;
   canvas.style.width = `${innerWidth}px`;
   c.scale(devicePixelRatio, devicePixelRatio);
-  c.fillStyle = "yellow";
-  c.fillRect(0, 0, innerWidth, innerHeight);
-  c.fillStyle = "magenta";
-  c.lineWidth = 4;
 
   const particles: Array<{
     x: number;
@@ -21,6 +17,9 @@ export function main(target: HTMLElement) {
     done: boolean;
   }> = [];
   function render() {
+    c.fillStyle = "yellow";
+    c.fillRect(0, 0, innerWidth, innerHeight);
+    c.fillStyle = "magenta";
     if (Math.random() < 0.2 && particles.length < 500) {
       particles.push({
         x: Math.random() * innerWidth,

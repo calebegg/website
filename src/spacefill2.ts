@@ -9,8 +9,6 @@ export function main(target: HTMLElement) {
   canvas.height = innerHeight * devicePixelRatio;
   canvas.style.width = `${innerWidth}px`;
   c.scale(devicePixelRatio, devicePixelRatio);
-  c.fillStyle = "yellow";
-  c.fillRect(0, 0, innerWidth, innerHeight);
   c.lineWidth = 4;
 
   let circles: Array<{
@@ -22,7 +20,8 @@ export function main(target: HTMLElement) {
     age: number;
   }> = [];
   function render() {
-    c.clearRect(0, 0, innerWidth, innerHeight);
+    c.fillStyle = "yellow";
+    c.fillRect(0, 0, innerWidth, innerHeight);
     if (circles.length === 0 || circles[0].done) {
       circles.unshift({
         x: Math.random() * innerWidth,

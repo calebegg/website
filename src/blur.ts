@@ -25,7 +25,7 @@ export function main(target: HTMLElement) {
   function render() {
     c.drawImage(canvas, 0, 0, innerWidth, innerHeight);
     c.fillStyle = "magenta";
-    // c.fillRect(0, innerHeight - 1, innerWidth, innerHeight);
+    c.fillRect(0, innerHeight - 1, innerWidth, innerHeight);
     if (mY <= -RADIUS && Math.random() < 0.1) {
       mX = Math.random() * innerWidth;
       mY = innerHeight + RADIUS;
@@ -36,7 +36,7 @@ export function main(target: HTMLElement) {
     c.fill();
 
     c.fillStyle = "yellow";
-    // c.fillRect(0, 0, innerWidth, 1);
+    c.fillRect(0, 0, innerWidth, 1);
     if (yY >= innerHeight + RADIUS && Math.random() < 0.1) {
       yX = Math.random() * innerWidth;
       yY = -RADIUS;

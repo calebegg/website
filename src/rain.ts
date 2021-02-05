@@ -28,7 +28,6 @@ export function main(target: HTMLElement) {
         done: false,
       });
     }
-    c.clearRect(0, 0, innerWidth, innerHeight);
     for (const [i, p] of particles.entries()) {
       p.y += SPEED;
       if (p.y + RADIUS > innerHeight) {

@@ -12,6 +12,7 @@ import { main as spacefill } from "./spacefill";
 import { main as spacefill2 } from "./spacefill2";
 import { main as rain } from "./rain";
 import { main as blur } from "./blur";
+import { main as yinandyang } from "./yinandyang";
 
 interface WindowWithCancel extends Window {
   cancel: () => void;
@@ -32,6 +33,7 @@ const mains: { [k: string]: typeof cmyk } = {
   spacefill2,
   rain,
   blur,
+  yinandyang,
 };
 
 function subjectivelyChoose<T>(array: T[]): T {

@@ -49,6 +49,7 @@ export function main(target: HTMLElement) {
             const theta = Math.atan2(b.y - o.y, b.x - o.x);
             b.dx = Math.cos(theta) * SPEED;
             b.dy = Math.sin(theta) * SPEED;
+            break;
           }
         }
       }

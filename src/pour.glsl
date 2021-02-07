@@ -32,7 +32,7 @@ vec4 water(float amount) {
 }
 
 vec4 WALL = vec4(0.0, 0.0, 0.0, 1.0);
-float SPEED = 0.5;
+float SPEED = .25;
 
 void main() {
   float x = gl_FragCoord.x;
@@ -41,7 +41,7 @@ void main() {
     gl_FragColor = water(0.0);
     return;
   }
-  if (y == 1.5 && rand(vec2(x, y)) < .01 && FRAME < 1800.0) {
+  if (y == 1.5 && rand(vec2(x, y)) < .005) {
     gl_FragColor = water(1.0);
     return;
   }
@@ -67,7 +67,15 @@ void main() {
     gl_FragColor = WALL;
     return;
   }
+  if (y < 65.5 && y > 60.5 && (mod(x + 19.0, 32.0) == 23.5 || mod(x + 19.0, 32.0) == 0.5)) {
+    gl_FragColor = WALL;
+    return;
+  }
   if (y == 90.5 && mod(x + 7.0, 62.0) <= 53.5) {
+    gl_FragColor = WALL;
+    return;
+  }
+  if (y < 90.5 && y > 85.5 && (mod(x + 7.0, 62.0) == 53.5 || mod(x + 7.0, 62.0) == 0.5)) {
     gl_FragColor = WALL;
     return;
   }
@@ -85,7 +93,7 @@ void main() {
   if (amount > 0.0) {
     if (below != WALL && below.b < 1.0) {
       amount -= SPEED;
-    } else if (mySide != WALL && mySide.b < 1.0) {
+    } else if (mySide != WALL && mySide.b < startAmount) {
       amount -= SPEED;
     }
   }
@@ -96,13 +104,13 @@ void main() {
     }
     // Is the cell to the left flowing right?
     if (rand(vec2(x - 1.0, y)) > 0.5 &&
-        at(x - 1.0, y).b > 0.0 &&
+        at(x - 1.0, y).b > startAmount &&
         (at(x - 1.0, y + 1.0) == WALL || at(x - 1.0, y + 1.0).b > .99)) {
       amount += SPEED;
     }
     // Is the cell to the right flowing left?
     if (rand(vec2(x + 1.0, y)) <= 0.5 &&
-        at(x + 1.0, y).b > 0.0 &&
+        at(x + 1.0, y).b > startAmount &&
         (at(x + 1.0, y + 1.0) == WALL || at(x + 1.0, y + 1.0).b > .99)) {
       amount += SPEED;
     }

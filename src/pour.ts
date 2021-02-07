@@ -1,7 +1,7 @@
 import shader from "./pour.glsl";
 import { createBuffer, createProgram } from "./webgl";
 
-const SCALE = 8;
+const SCALE = 4;
 
 const offsets = (function* () {
   while (true) {

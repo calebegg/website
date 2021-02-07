@@ -32,7 +32,7 @@ vec4 water(float amount) {
 }
 
 vec4 WALL = vec4(0.0, 0.0, 0.0, 1.0);
-float SPEED = .25;
+float SPEED = .5;
 
 void main() {
   float x = gl_FragCoord.x;
@@ -83,38 +83,37 @@ void main() {
   float startAmount = amount;
   vec4 above = at(x, y - 1.0);
   vec4 below = at(x, y + 1.0);
-  // True to flow to the right
-  bool myFlowing = rand(vec2(x, y)) > 0.5;
-  vec4 mySide = at(x - 1.0, y);
-  if (myFlowing) {
-    mySide = at(x + 1.0, y);
-  }
+  vec4 left = at(x - 1.0, y);
+  vec4 right = at(x + 1.0, y);
   // Am I flowing out?
   if (amount > 0.0) {
-    if (below != WALL && below.b < 1.0) {
-      amount -= SPEED;
-    } else if (mySide != WALL && mySide.b < startAmount) {
-      amount -= SPEED;
+    if (below != WALL && below.b <= .999) {
+      amount -= min(SPEED, 1.0 - below.b);
+    } else {
+      if (left != WALL && left.b < startAmount * 0.75) {
+        amount -= startAmount / 4.0;
+      }
+      if (right != WALL && right.b < startAmount * 0.75) {
+        amount -= startAmount / 4.0;
+      }
     }
   }
-  if (startAmount < 1.0) {
+  if (startAmount < .999) {
     // Is the cell above flowing into us?
     if (above.b > 0.0) {
-      amount += SPEED;
+      amount += min(SPEED, 1.0 - amount);
     }
     // Is the cell to the left flowing right?
-    if (rand(vec2(x - 1.0, y)) > 0.5 &&
-        at(x - 1.0, y).b > startAmount &&
-        (at(x - 1.0, y + 1.0) == WALL || at(x - 1.0, y + 1.0).b > .99)) {
-      amount += SPEED;
+    if (left.b * 0.75 > startAmount &&
+        (at(x - 1.0, y + 1.0) == WALL || at(x - 1.0, y + 1.0).b > .999)) {
+      amount += left.b / 4.0;
     }
     // Is the cell to the right flowing left?
-    if (rand(vec2(x + 1.0, y)) <= 0.5 &&
-        at(x + 1.0, y).b > startAmount &&
-        (at(x + 1.0, y + 1.0) == WALL || at(x + 1.0, y + 1.0).b > .99)) {
-      amount += SPEED;
+    if (right.b * 0.75 > startAmount &&
+        (at(x + 1.0, y + 1.0) == WALL || at(x + 1.0, y + 1.0).b > .999)) {
+      amount += right.b / 4.0;
     }
   }
 
-  gl_FragColor = water(amount);
+  gl_FragColor = water(min(amount, 1.0));
 }

@@ -14,6 +14,7 @@ import { main as rain } from "./rain";
 import { main as blur } from "./blur";
 import { main as yinandyang } from "./yinandyang";
 import { main as pour } from "./pour";
+import { main as repel } from "./repel";
 
 interface WindowWithCancel extends Window {
   cancel: () => void;
@@ -36,6 +37,7 @@ const mains: { [k: string]: typeof cmyk } = {
   blur,
   yinandyang,
   pour,
+  repel,
 };
 
 function subjectivelyChoose<T>(array: T[]): T {

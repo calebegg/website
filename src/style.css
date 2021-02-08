@@ -16,6 +16,10 @@ body {
   align-items: center;
 }
 
+::selection {
+  background: yellow;
+}
+
 #target {
   position: fixed;
   top: 0;

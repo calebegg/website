@@ -29,9 +29,9 @@ const mains: { [k: string]: typeof cmyk } = {
   bubbles,
   laser,
   balls,
-  spacefill,
+  // spacefill,
   spacefill2,
-  rain,
+  // rain,
   blur,
   yinandyang,
 };
